@@ -22,11 +22,11 @@
     /*
     Load Dynamic JS
      */
-    let requested = []; //This is so we don't add the same object in quick succession.
+    let requestedJS = []; //This is so we don't add the same object in quick succession.
     const loadJS = (windowObjectToTest, url, callback = null)=>{
-        if(window[windowObjectToTest] || requested.contains(windowObjectToTest)){ return true }
+        if(window[windowObjectToTest] || requestedJS.includes(windowObjectToTest)){ return true }
 
-        requested.push(windowObjectToTest);
+        requestedJS.push(windowObjectToTest);
 
         const scriptTag = document.createElement('script');
         scriptTag.src = url;
@@ -34,6 +34,20 @@
         if(callback){
             scriptTag.onload(()=>{ callback()})
         }
+    }
+
+    /*
+    Load CSS
+     */
+    let requestedCSS = [];
+    const loadCSS = (name, url)=>{
+        if(requestedCSS.includes(name)){ return true }
+        requestedCSS.push(name);
+
+        const linkTag = document.createElement('link');
+        linkTag.href = url;
+        linkTag.rel= "stylesheet";
+        document.body.appendChild(linkTag);
     }
 
     /* Check for JS Dependencies on the JS Object */
@@ -87,6 +101,7 @@
 
     if (undefined === window.WPG_JS_Loader) (window.WPG_JS_Loader = {});
     window.WPG_JS_Loader.loadJS = loadJS;
+    window.WPG_JS_Loader.loadCSS = loadCSS;
     window.WPG_JS_Loader.globals = globals;
     window.WPG_JS_Loader.debug = debug;
     window.WPG_JS_Loader.checkDependencies = checkDependencies;
